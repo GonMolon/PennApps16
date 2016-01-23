@@ -2,6 +2,8 @@
     <string name="app_name">CallTranslate</string>
     <string name="tap_on_mic">Tap on the mic and say your message</string>
     <string name="begin_recording">Please begin reciting</string>
-    <string name="now_recording">Recording&#8230;</string> <!-- &#8230; == ... -->
+    <string name="now_recording">Recording&#8230;</string>
+    <!-- &#8230; == ... -->
     <string name="done_recording">Speech recording ended</string>
+    <string name="title_activity_fab">FABActivity</string>
 </resources>
