@@ -32,7 +32,7 @@ public class FirebaseChat {
             } else {
                 my_ref = 2;
             }
-            Firebase db = new Firebase("https://scorching-torch-8125.firebaseio.com");
+            Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
             chat_ref = db.child(chat.id);
             chat_ref.setValue(chat);
             chat_ref.child("messages").addChildEventListener(new ChildEventListener() {
