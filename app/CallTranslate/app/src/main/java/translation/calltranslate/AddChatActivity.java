@@ -28,6 +28,8 @@ public class AddChatActivity extends AppCompatActivity {
 
         context = this;
 
+        tts = new VoiceSynthesizer(context);
+
         to_phone = (EditText)findViewById(R.id.editText);
 
         Button cancelButton = (Button) findViewById(R.id.cancelButton);
@@ -47,7 +49,7 @@ public class AddChatActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.d(TAG, "MESSAGE RECEIVED");
-                        //tts.speak((String) dataSnapshot.child("text").getValue());
+                        tts.speak((String) dataSnapshot.child("text").getValue());
                     }
 
                     @Override
