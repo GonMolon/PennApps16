@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Firebase.setAndroidContext(this); //firebase stuff
+
         Button tts = (Button)findViewById(R.id.open_test);
         tts.setOnClickListener(new View.OnClickListener() {
             @Override
