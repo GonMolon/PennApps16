@@ -1,5 +1,7 @@
 package translation.calltranslate;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -19,13 +22,32 @@ import okhttp3.Response;
 
 public class CallActivity extends AppCompatActivity {
 
+    private Context context;
+    private SharedPreferences prefs;
     private final OkHttpClient client = new OkHttpClient();
     private String microsoftAuthUrl = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
+    private String myNumber;
+    private String otherNumber;
+    private String myLanguage;
+    private String otherLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
+
+        context = this;
+        prefs = this.getSharedPreferences("translation.calltranslate", MODE_PRIVATE);
+
+        myNumber = prefs.getString("phoneNumber", "None");
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            otherNumber = b.getString("otherNumber");
+        } else {
+            otherNumber = "None";
+        }
+        myLanguage = Locale.getDefault().getLanguage();
+        otherLanguage = "ar";
 
         try {
             getTranslation1(new Callback() {
@@ -46,8 +68,8 @@ public class CallActivity extends AppCompatActivity {
                             String uri = Uri.parse("http://api.microsofttranslator.com/v2/Http.svc/Translate?")
                                     .buildUpon()
                                     .appendQueryParameter("text", "How are you doing?")
-                                    .appendQueryParameter("from", "en")
-                                    .appendQueryParameter("to", "ar")
+                                    .appendQueryParameter("from", myLanguage)
+                                    .appendQueryParameter("to", otherLanguage)
                                     .build().toString();
 
                             String header = "Bearer " + accessToken;

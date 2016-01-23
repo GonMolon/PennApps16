@@ -20,7 +20,7 @@ public class AddChatActivity extends AppCompatActivity {
     private static final String TAG = "Chat";
 
     private Context context;
-    private EditText to_phone;
+    private EditText toPhoneEditText;
     private VoiceSynthesizer tts;
     private int CALL_REQ_CODE = 200;
 
@@ -35,7 +35,7 @@ public class AddChatActivity extends AppCompatActivity {
 
 //        tts = new VoiceSynthesizer(context);
 
-        to_phone = (EditText)findViewById(R.id.editText);
+        toPhoneEditText = (EditText) findViewById(R.id.editText);
 
         Button cancelButton = (Button) findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +62,7 @@ public class AddChatActivity extends AppCompatActivity {
 //                });
 //                chat.send_message("Hola, ¿qué tal?");
                 Intent callIntent = new Intent(context, CallActivity.class);
+                callIntent.putExtra("otherNumber", toPhoneEditText.getText().toString());
                 startActivityForResult(callIntent, 200);
             }
         });
