@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -48,16 +49,13 @@ public class AddChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "Chat started", Toast.LENGTH_SHORT).show();
-                FirebaseChat chat = new FirebaseChat(to_phone.getText().toString(), getApplicationContext(), new ValueEventListener() {
+                FirebaseChat chat = new FirebaseChat(to_phone.getText().toString(), getApplicationContext(), new FirebaseChat.OnNewMessageListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onNewMessage(DataSnapshot dataSnapshot) {
                         Log.d(TAG, "MESSAGE RECEIVED");
-                        tts.speak((String) dataSnapshot.child("text").getValue());
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-
+                        String text = (String) dataSnapshot.child("text").getValue();
+                        Log.d(TAG, text);
+                        tts.speak(text);
                     }
                 });
                 chat.send_message("Hola, ¿qué tal?");

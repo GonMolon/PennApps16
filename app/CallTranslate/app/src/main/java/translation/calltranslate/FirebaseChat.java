@@ -1,9 +1,12 @@
 package translation.calltranslate;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -18,9 +21,10 @@ public class FirebaseChat {
     private Chat chat;
     private int my_ref;
 
-    public FirebaseChat(String to_phone, Context context, ValueEventListener listener) {
+    public FirebaseChat(String to_phone, Context context, final OnNewMessageListener listener) {
         TelephonyManager tMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-        String my_phone = "111111"; //tMgr.getLine1Number(); TODO check this
+        SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", Context.MODE_PRIVATE);
+        String my_phone = prefs.getString("phoneNumber", "111111");
         chat = new Chat(my_phone, to_phone);
         if(chat.id != null) {
             if(chat.id.indexOf(my_phone) == 0) {
@@ -31,12 +35,32 @@ public class FirebaseChat {
             Firebase db = new Firebase("https://scorching-torch-8125.firebaseio.com");
             chat_ref = db.child(chat.id);
             chat_ref.setValue(chat);
-            chat_ref.child("messages").addValueEventListener(listener);
+            chat_ref.child("messages").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if(((Long) dataSnapshot.child("to").getValue()).intValue() == my_ref && (boolean)dataSnapshot.child("read").getValue() == false) {
+                        listener.onNewMessage(dataSnapshot);
+                        dataSnapshot.child("read").getRef().setValue(false);
+                    }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {}
+            });
         }
     }
 
     public void send_message(String text) {
-        chat_ref.push().setValue(new Message(text, my_ref), new Firebase.CompletionListener() {
+        chat_ref.child("messages").push().setValue(new Message(text, my_ref), new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
 
@@ -84,5 +108,9 @@ public class FirebaseChat {
             to = (my_ref == 1 ? 1 : 0) + 1;
             read = false;
         }
+    }
+
+    public interface OnNewMessageListener {
+        void onNewMessage(DataSnapshot dataSnapshot);
     }
 }
