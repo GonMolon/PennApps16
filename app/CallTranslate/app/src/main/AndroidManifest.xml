@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SpeechActivity"></activity>
+        <activity android:name=".SpeechActivity"/>
+        <activity android:name=".TTSActivity"/>
     </application>
 
 </manifest>

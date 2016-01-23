@@ -7,21 +7,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="translation.calltranslate.MainActivity">
+    tools:context="translation.calltranslate.TTSActivity">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test-TTS"
-        android:id="@+id/open_test"
-        android:layout_alignParentTop="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test Speech"
-        android:id="@+id/speechTestButton"
-        android:layout_alignParentBottom="true"
+        android:text="TTS"
+        android:id="@+id/tts"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 </RelativeLayout>
