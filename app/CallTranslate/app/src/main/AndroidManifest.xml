@@ -31,7 +31,9 @@
         <service
             android:name=".ReceivingCallListener"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".CallActivity"></activity>
     </application>
 
 </manifest>

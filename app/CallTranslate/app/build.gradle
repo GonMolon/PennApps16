@@ -30,4 +30,5 @@ dependencies {
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.firebase:firebase-client-android:2.5.0+'
     compile 'com.android.support:design:23.1.1'
+    compile 'com.squareup.okhttp3:okhttp:3.0.1'
 }
