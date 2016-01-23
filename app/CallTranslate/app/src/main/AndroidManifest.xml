@@ -26,6 +26,12 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity android:name=".SetupActivity" />
+        <activity android:name=".ReceivingCall" />
+
+        <service
+            android:name=".ReceivingCallListener"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

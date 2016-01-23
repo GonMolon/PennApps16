@@ -33,7 +33,7 @@ public class SetupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String phoneNumber = phoneNumberEditText.getText().toString().trim().replaceAll("\\D", "");
-                if (phoneNumber.length() == 7) {
+                if (phoneNumber.length() == 10) {
                     SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", MODE_PRIVATE);
                     prefs.edit().putString("phoneNumber", phoneNumber).apply();
                     Intent intent = getIntent();
