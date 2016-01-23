@@ -21,6 +21,11 @@ public class SetupActivity extends AppCompatActivity {
 
         context = this;
 
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.hide();
+        }
+
         final EditText phoneNumberEditText = (EditText) findViewById(R.id.phoneNumberEditText);
 
         Button continueButton = (Button) findViewById(R.id.continueButton);

@@ -31,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
             launchPhoneRequest();
         }
 
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setElevation(0);
+            ab.setTitle("Conversations");
+        }
+
         Button speechTestButton = (Button) findViewById(R.id.speechTestButton);
         speechTestButton.setOnClickListener(new View.OnClickListener() {
             @Override
