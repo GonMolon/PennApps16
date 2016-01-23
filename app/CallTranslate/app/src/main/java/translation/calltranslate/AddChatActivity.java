@@ -36,6 +36,7 @@ public class AddChatActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tts.finish();
                 finish();
             }
         });
@@ -60,5 +61,11 @@ public class AddChatActivity extends AppCompatActivity {
                 chat.send_message("Hola, ¿qué tal?");
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        tts.finish();
     }
 }
