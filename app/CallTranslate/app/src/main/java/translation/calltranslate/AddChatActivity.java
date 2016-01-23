@@ -26,6 +26,8 @@ public class AddChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_chat);
 
+        setTitle("New chat");
+
         context = this;
 
         tts = new VoiceSynthesizer(context);

@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="24dp"
     tools:context="translation.calltranslate.AddChatActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter your new contact's phone number:"
+        android:id="@+id/newContactNumber" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="phone"
         android:ems="10"
-        android:id="@+id/editText"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:id="@+id/editText" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,13 +30,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:id="@+id/cancelButton" />
+            android:id="@+id/cancelButton"
+            android:background="@null"
+            android:textColor="#7f8c8d"
+            android:gravity="left|bottom"
+            android:minHeight="40dp" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start Chat"
             android:id="@+id/addChatButton"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:textColor="@color/colorAccent"
+            android:gravity="bottom|right"
+            android:minHeight="40dp" />
     </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>

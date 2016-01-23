@@ -24,8 +24,8 @@
         <activity
             android:name=".AddChatActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Dialog" />
-        <activity android:name=".SetupActivity"></activity>
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity android:name=".SetupActivity" />
     </application>
 
 </manifest>
