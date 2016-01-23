@@ -47,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button receivingCallTestButton = (Button) findViewById(R.id.receivingCallButton);
+        receivingCallTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ReceivingCall.class);
+                startActivity(intent);
+            }
+        });
+
+
         Button tts = (Button)findViewById(R.id.open_test);
         tts.setOnClickListener(new View.OnClickListener() {
             @Override

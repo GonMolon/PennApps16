@@ -13,9 +13,8 @@ public class ReceivingCall extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiving_call);
 
-        Uri defaultRintoneUri = RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE);
-        Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRintoneUri);
+        Uri defaultRingtoneUri = RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE);
+        Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRingtoneUri);
         defaultRingtone.play();
-
     }
 }
