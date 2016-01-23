@@ -24,7 +24,7 @@ public class FirebaseChat {
     public FirebaseChat(String to_phone, Context context, final OnNewMessageListener listener) {
         TelephonyManager tMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", Context.MODE_PRIVATE);
-        String my_phone = prefs.getString("phoneNumber", "111111");
+        String my_phone = prefs.getString("phoneNumber", null);
         chat = new Chat(my_phone, to_phone);
         if(chat.id != null) {
             if(chat.id.indexOf(my_phone) == 0) {
@@ -82,17 +82,17 @@ public class FirebaseChat {
             finished = false;
             int compare = to_num.compareTo(from_num);
             if(compare < 0) {
-                this.id = to_num + from_num;
+                this.id = to_num + "_" + from_num;
             } else if(compare > 0){
-                this.id = from_num + to_num;
+                this.id = from_num + "-" + to_num;
             } else {
                 Log.e(TAG, "WRONG CALLING NUMBER!");
             }
             if(id != null) {
                 if(my_ref == 1) {
-                    lang1 = Locale.getDefault().getDisplayLanguage();
+                    lang1 = Locale.getDefault().getLanguage();
                 } else {
-                    lang2 = Locale.getDefault().getDisplayLanguage();
+                    lang2 = Locale.getDefault().getLanguage();
                 }
             }
         }

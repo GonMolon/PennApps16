@@ -29,12 +29,12 @@ public class ReceivingCallListener extends Service {
                 @Override
                 public void onChildAdded(DataSnapshot snap, String s) {
                     s = snap.getKey();
-                    if (s.contains(my_phone) && (s.indexOf(my_phone) == 0 || s.indexOf(my_phone) == 10) && (snap.child("lang1").getValue() == null || snap.child("lang2").getValue() == null)) {
+                    if (s.contains(my_phone) && (s.indexOf(my_phone) == 0 || s.indexOf(my_phone) == 11) && (snap.child("lang1").getValue() == null || snap.child("lang2").getValue() == null)) {
                         Log.d(TAG, "Detected new phone call with id: " + s);
                         if (snap.child("lang1").getValue() == null) {
-                            snap.getRef().child("lang1").setValue(Locale.getDefault().getDisplayLanguage());
+                            snap.getRef().child("lang1").setValue(Locale.getDefault().getLanguage());
                         } else {
-                            snap.getRef().child("lang2").setValue(Locale.getDefault().getDisplayLanguage());
+                            snap.getRef().child("lang2").setValue(Locale.getDefault().getLanguage());
                         }
                         Intent i = new Intent(getApplicationContext(), ReceivingCall.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
