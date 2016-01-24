@@ -16,74 +16,81 @@ public class FirebaseChat {
 
     private static final String TAG = "Firebase";
 
-    private Firebase chat_ref;
     private String myNum;
     private String otherNum;
     private String lang1;
     private String lang2;
     private String id;
     private boolean finished;
+    private Firebase callRef;
 
-    public FirebaseChat(String toPhone, Context context, final OnNewMessageListener listener) {
+    public FirebaseChat(Firebase callReference, String toPhone, String callId, Context context, final OnNewMessageListener listener) {
         SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", Context.MODE_PRIVATE);
         this.myNum = prefs.getString("phoneNumber", null);
         this.otherNum = toPhone;
-        setChatId();
+        this.id = callId;
         this.lang1 = Locale.getDefault().getLanguage();
         this.lang2 = "";
         this.finished = false;
+        this.callRef = callReference;
+        setupCall();
 
-        Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
-        chat_ref = db.child(id);
-        chat_ref.child("messages").addChildEventListener(new ChildEventListener() {
+        callRef.child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                if(((Long) dataSnapshot.child("to").getValue()).intValue() == my_ref && (boolean)dataSnapshot.child("read").getValue() == false) {
-//                    listener.onNewMessage(dataSnapshot);
-//                    dataSnapshot.child("read").getRef().setValue(false);
-//                }
+                if ((dataSnapshot.child("to").getValue()).toString().equals(myNum) && !((boolean) dataSnapshot.child("read").getValue())) {
+                    listener.onNewMessage(dataSnapshot);
+                    dataSnapshot.child("read").getRef().setValue(true);
+                }
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {}
+            public void onCancelled(FirebaseError firebaseError) {
+            }
         });
     }
 
-    public void send_message(String text) {
-//        chat_ref.child("messages").push().setValue(new Message(text, my_ref), new Firebase.CompletionListener() {
-//            @Override
-//            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-//
-//            }
-//        });
+    public void setupCall() {
+        callRef.child("person1").setValue(myNum);
+        callRef.child("person2").setValue(otherNum);
+        callRef.child("language1").setValue(lang1);
+        callRef.child("language2").setValue(lang2);
+        callRef.child("finished").setValue(false);
+    }
+
+    public void setLang2(String langCode) {
+        this.lang2 = langCode;
+    }
+
+    public void send_message(String message) {
+        callRef.child("messages").push().setValue(new Message(message));
     }
 
     public void finish_conversation() {
-        chat_ref.child("finished").setValue(true);
-    }
-
-    private void setChatId() {
-        this.id = this.myNum + "_" + this.otherNum;
+        callRef.child("finished").setValue(true);
     }
 
     private class Message {
         public String text;
-        public int to;
+        public String to;
         public boolean read;
 
-        public Message(String text, int my_ref) {
+        public Message(String text) {
             this.text = text;
-            to = (my_ref == 1 ? 1 : 0) + 1;
-            read = false;
+            this.to = otherNum;
+            this.read = false;
         }
     }
 

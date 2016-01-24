@@ -14,7 +14,10 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +51,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     private Intent mSpeechRecognizerIntent;
     private boolean mIsListening;
     private ArrayList<Integer> voiceLevelChanges;
+    private FirebaseChat chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +69,16 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
             otherNumber = "None";
         }
         myLanguage = Locale.getDefault().getLanguage();
-        otherLanguage = "ar";
+        otherLanguage = "";
 
         tts = new VoiceSynthesizer(context);
         setupSpeechInput();
-        listen();
 
-        FirebaseChat chat = new FirebaseChat(otherNumber, context, new FirebaseChat.OnNewMessageListener() {
+        Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
+        String id = myNumber + "_" + otherNumber;
+        Firebase callRef = db.child(id);
+
+        chat = new FirebaseChat(callRef, otherNumber, id, context, new FirebaseChat.OnNewMessageListener() {
             @Override
             public void onNewMessage(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "MESSAGE RECEIVED");
@@ -80,13 +87,46 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 //                sayMessage(text);
             }
         });
-//        chat.send_message("Hola, ¿qué tal?");
+
+        callRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getKey().equals("language2")) {
+                    System.out.println("User 2 joined!");
+                    otherLanguage = dataSnapshot.getValue().toString();
+                    chat.setLang2(otherLanguage);
+                    listen();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        chat.finish_conversation();
         tts.finish();
+        mSpeechRecognizer.destroy();
     }
 
     private void getTranslation(final String message) throws Exception {
@@ -143,6 +183,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                                     throw new IOException("Unexpected code " + response);
 
                                 System.out.println(response.body().string());
+                                chat.send_message("Yo");
                             }
                         });
                     } catch (JSONException e) {
@@ -303,6 +344,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
             // Log.d(TAG, matches.toString()); //$NON-NLS-1$
 //            callApi(matches.get(0));
             System.out.println(matches.get(0));
+            Toast.makeText(context, matches.get(0), Toast.LENGTH_SHORT).show();
             try {
                 getTranslation(matches.get(0));
             } catch (Exception e) {
