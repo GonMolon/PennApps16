@@ -37,9 +37,29 @@ public class FirebaseChat {
             this.lang2 = "";
             setupCall();
         } else {
-            this.otherNum = callRef.child("person1").toString();
-            this.lang1 = callRef.child("language1").toString();
-            this.lang2 = callRef.child("language2").toString();
+            callReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        switch (child.getKey()) {
+                            case "person1":
+                                otherNum = child.getValue().toString();
+                                break;
+                            case "language1":
+                                lang1 = child.getValue().toString();
+                                break;
+                            case "language2":
+                                lang2 = child.getValue().toString();
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.e(TAG, firebaseError.getMessage());
+                }
+            });
         }
     }
 

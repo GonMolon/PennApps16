@@ -20,6 +20,7 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,6 +109,34 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 
         Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
         Firebase callRef = db.child(id);
+        if (user == 1) {
+            callRef.removeValue();
+            callRef = db.child(id);
+        } else {
+            callRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        switch (child.getKey()) {
+                            case "person1":
+                                otherNumber = child.getValue().toString();
+                                break;
+                            case "language1":
+                                otherLanguage = child.getValue().toString();
+                                break;
+                            case "language2":
+                                myLanguage = child.getValue().toString();
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.e(TAG, firebaseError.getMessage());
+                }
+            });
+        }
 
         chat = new FirebaseChat(callRef, user, otherNumber, id, context);
 
@@ -184,6 +213,12 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        wrapUp();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         wrapUp();
     }
 
