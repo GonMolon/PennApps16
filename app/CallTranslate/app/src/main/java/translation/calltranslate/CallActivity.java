@@ -426,6 +426,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                 break;
             case SpeechRecognizer.ERROR_NO_MATCH:
                 mError = "No match";
+                mSpeechRecognizer.cancel();
                 mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
                 break;
             case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
