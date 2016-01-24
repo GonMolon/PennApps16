@@ -24,14 +24,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SpeechActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".AddChatActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"
             android:excludeFromRecents="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity
             android:name=".SetupActivity"
@@ -40,7 +36,7 @@
         <activity
             android:name=".ReceivingCall"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".CallActivity"
             android:configChanges="orientation"
@@ -50,6 +46,8 @@
             android:name=".ReceivingCallListener"
             android:enabled="true"
             android:exported="true" />
+
+        <activity android:name=".ContactActivity"></activity>
     </application>
 
 </manifest>

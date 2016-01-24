@@ -5,19 +5,30 @@
     android:layout_height="match_parent"
     tools:context="translation.calltranslate.MainActivity">
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/contacts_list"></ListView>
+    <ImageView
+        android:layout_width="192dp"
+        android:layout_height="192dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/background_circle"
+        android:layout_centerInParent="true" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+    <ImageButton
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:id="@+id/imageButton"
+        android:src="@drawable/ic_phone_white_48dp"
+        android:scaleType="fitXY"
+        android:background="@null"
+        android:layout_centerInParent="true" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add_white_48dp"
-        android:elevation="4dp" />
-
+        android:text="Translated Talk"
+        android:id="@+id/textView2"
+        android:layout_above="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="45dp"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 </RelativeLayout>
