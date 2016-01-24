@@ -31,4 +31,5 @@ dependencies {
     compile 'com.firebase:firebase-client-android:2.5.0+'
     compile 'com.android.support:design:23.1.1'
     compile 'com.squareup.okhttp3:okhttp:3.0.1'
+    compile 'com.mikhaellopez:circularimageview:2.1.1'
 }

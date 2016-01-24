@@ -3,13 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="translation.calltranslate.MainActivity">
 
-    <ImageView
+    <com.mikhaellopez.circularimageview.CircularImageView
         android:layout_width="192dp"
         android:layout_height="192dp"
-        android:id="@+id/imageView"
         android:src="@drawable/background_circle"
+        android:id="@+id/circularImageView"
+        app:shadow="true"
+        app:shadow_radius="12"
+        app:shadow_color="#555555"
         android:layout_centerInParent="true" />
 
     <ImageButton
@@ -26,7 +30,7 @@
         android:layout_height="wrap_content"
         android:text="Translated Talk"
         android:id="@+id/textView2"
-        android:layout_above="@+id/imageView"
+        android:layout_above="@+id/circularImageView"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="45dp"
         android:textSize="30sp"
