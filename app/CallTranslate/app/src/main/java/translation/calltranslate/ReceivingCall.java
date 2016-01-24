@@ -90,7 +90,9 @@ public class ReceivingCall extends AppCompatActivity {
                 } else if (seekBar.getProgress() > 100 - border) {
                     defaultRingtone.stop();
                     db.child(id).child("language2").setValue(Locale.getDefault().getLanguage());
-                    Intent intent = new Intent(activity.getApplicationContext(), SpeechActivity.class);
+                    Intent intent = new Intent(activity.getApplicationContext(), CallActivity.class);
+                    intent.putExtra("id", id);
+                    intent.putExtra("user", 2);
                     startActivityForResult(intent, 1);
                     seekBar.setProgress(50);
                 }

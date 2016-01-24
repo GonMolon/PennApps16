@@ -49,6 +49,7 @@ public class AddChatActivity extends AppCompatActivity {
                     Toast.makeText(context, "Invalid phone number", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent callIntent = new Intent(context, CallActivity.class);
+                    callIntent.putExtra("user", 1);
                     callIntent.putExtra("otherNumber", toPhoneEditText.getText().toString());
                     startActivityForResult(callIntent, CALL_REQ_CODE);
                 }

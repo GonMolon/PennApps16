@@ -61,6 +61,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     private boolean mIsListening;
     private ArrayList<Integer> voiceLevelChanges;
     private FirebaseChat chat;
+    private int user;
 
     private TextView callProgressTextView;
     private ProgressBar progressBar;
@@ -77,24 +78,38 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         myNumber = prefs.getString("phoneNumber", "None");
+        String id = "";
+
         Bundle b = getIntent().getExtras();
         if (b != null) {
-            otherNumber = b.getString("otherNumber");
+            user = b.getInt("user");
+            if (user == 1) {
+                otherNumber = b.getString("otherNumber");
+            } else {
+                id = b.getString("id");
+                otherNumber = "None";
+            }
         } else {
             otherNumber = "None";
+            user = 1;
         }
-        myLanguage = Locale.getDefault().getLanguage();
-        otherLanguage = "";
 
-        callProgressTextView.setText("Calling " + otherNumber);
+        if (user == 1) {
+            callProgressTextView.setText("Calling " + otherNumber);
+            myLanguage = Locale.getDefault().getLanguage();
+            otherLanguage = "";
+            id = myNumber + "_" + otherNumber;
+        } else {
+            callProgressTextView.setText("Waiting for first message to be sent.");
+        }
+
         tts = new VoiceSynthesizer(context);
         setupSpeechInput();
 
         Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
-        String id = myNumber + "_" + otherNumber;
         Firebase callRef = db.child(id);
 
-        chat = new FirebaseChat(callRef, otherNumber, id, context);
+        chat = new FirebaseChat(callRef, user, otherNumber, id, context);
 
         callRef.addChildEventListener(new ChildEventListener() {
             @Override

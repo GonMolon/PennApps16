@@ -24,19 +24,26 @@ public class FirebaseChat {
     private boolean finished;
     private Firebase callRef;
 
-    public FirebaseChat(Firebase callReference, String toPhone, String callId, Context context) {
+    public FirebaseChat(Firebase callReference, int user, String toPhone, String callId, Context context) {
         SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", Context.MODE_PRIVATE);
         this.myNum = prefs.getString("phoneNumber", null);
-        this.otherNum = toPhone;
         this.id = callId;
-        this.lang1 = Locale.getDefault().getLanguage();
-        this.lang2 = "";
         this.finished = false;
         this.callRef = callReference;
-        setupCall();
+
+        if (user == 1) {
+            this.otherNum = toPhone;
+            this.lang1 = Locale.getDefault().getLanguage();
+            this.lang2 = "";
+            setupCall();
+        } else {
+            this.otherNum = callRef.child("person1").toString();
+            this.lang1 = callRef.child("language1").toString();
+            this.lang2 = callRef.child("language2").toString();
+        }
     }
 
-    public void setupCall() {
+    private void setupCall() {
         callRef.child("person1").setValue(myNum);
         callRef.child("person2").setValue(otherNum);
         callRef.child("language1").setValue(lang1);
