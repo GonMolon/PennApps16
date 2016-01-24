@@ -157,7 +157,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                     listen();
                 } else if (dataSnapshot.getKey().equals("finished")) {
                     if ((boolean) dataSnapshot.getValue()) {
-                        Toast.makeText(context, "Call declined", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Call ended", Toast.LENGTH_SHORT).show();
                         wrapUp();
                     }
                 }
