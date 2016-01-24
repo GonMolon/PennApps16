@@ -74,8 +74,6 @@ public class SpeechActivity extends AppCompatActivity implements RecognitionList
         micText = (TextView) findViewById(R.id.micText);
         recordCircle = (ImageView) findViewById(R.id.recordCircle);
 
-        voiceLevelChanges = new ArrayList<>();
-
         setupSpeechInput();
     }
 
@@ -120,6 +118,7 @@ public class SpeechActivity extends AppCompatActivity implements RecognitionList
     }
 
     protected void setupSpeechInput() {
+        voiceLevelChanges = new ArrayList<>();
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechRecognizer.setRecognitionListener(this);
         mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);

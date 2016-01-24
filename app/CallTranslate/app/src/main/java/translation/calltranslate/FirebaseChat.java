@@ -2,7 +2,6 @@ package translation.calltranslate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.firebase.client.ChildEventListener;
@@ -18,84 +17,62 @@ public class FirebaseChat {
     private static final String TAG = "Firebase";
 
     private Firebase chat_ref;
-    private Chat chat;
-    private int my_ref;
+    private String myNum;
+    private String otherNum;
+    private String lang1;
+    private String lang2;
+    private String id;
+    private boolean finished;
 
-    public FirebaseChat(String to_phone, Context context, final OnNewMessageListener listener) {
-        TelephonyManager tMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+    public FirebaseChat(String toPhone, Context context, final OnNewMessageListener listener) {
         SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", Context.MODE_PRIVATE);
-        String my_phone = prefs.getString("phoneNumber", null);
-        chat = new Chat(my_phone, to_phone);
-        if(chat.id != null) {
-            if(chat.id.indexOf(my_phone) == 0) {
-                my_ref = 1;
-            } else {
-                my_ref = 2;
+        this.myNum = prefs.getString("phoneNumber", null);
+        this.otherNum = toPhone;
+        setChatId();
+        this.lang1 = Locale.getDefault().getLanguage();
+        this.lang2 = "";
+        this.finished = false;
+
+        Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
+        chat_ref = db.child(id);
+        chat_ref.child("messages").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                if(((Long) dataSnapshot.child("to").getValue()).intValue() == my_ref && (boolean)dataSnapshot.child("read").getValue() == false) {
+//                    listener.onNewMessage(dataSnapshot);
+//                    dataSnapshot.child("read").getRef().setValue(false);
+//                }
             }
-            Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com");
-            chat_ref = db.child(chat.id);
-            chat_ref.setValue(chat);
-            chat_ref.child("messages").addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if(((Long) dataSnapshot.child("to").getValue()).intValue() == my_ref && (boolean)dataSnapshot.child("read").getValue() == false) {
-                        listener.onNewMessage(dataSnapshot);
-                        dataSnapshot.child("read").getRef().setValue(false);
-                    }
-                }
 
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
 
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
 
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
 
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {}
-            });
-        }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
+        });
     }
 
     public void send_message(String text) {
-        chat_ref.child("messages").push().setValue(new Message(text, my_ref), new Firebase.CompletionListener() {
-            @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-
-            }
-        });
+//        chat_ref.child("messages").push().setValue(new Message(text, my_ref), new Firebase.CompletionListener() {
+//            @Override
+//            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+//
+//            }
+//        });
     }
 
     public void finish_conversation() {
         chat_ref.child("finished").setValue(true);
     }
 
-    private class Chat {
-        public String id;
-        public String lang1;
-        public String lang2;
-        public boolean finished;
-
-        public Chat(String from_num, String to_num) {
-            finished = false;
-            int compare = to_num.compareTo(from_num);
-            if(compare < 0) {
-                this.id = to_num + "_" + from_num;
-            } else if(compare > 0){
-                this.id = from_num + "-" + to_num;
-            } else {
-                Log.e(TAG, "WRONG CALLING NUMBER!");
-            }
-            if(id != null) {
-                if(my_ref == 1) {
-                    lang1 = Locale.getDefault().getLanguage();
-                } else {
-                    lang2 = Locale.getDefault().getLanguage();
-                }
-            }
-        }
+    private void setChatId() {
+        this.id = this.myNum + "_" + this.otherNum;
     }
 
     private class Message {
