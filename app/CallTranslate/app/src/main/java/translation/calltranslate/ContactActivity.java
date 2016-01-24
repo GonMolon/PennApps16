@@ -43,6 +43,11 @@ public class ContactActivity extends AppCompatActivity {
 
         context = this;
 
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setTitle("Contacts");
+        }
+
         selectUsers = new ArrayList<SelectUser>();
         resolver = this.getContentResolver();
         listView = (ListView) findViewById(R.id.contacts_list);
@@ -121,12 +126,5 @@ public class ContactActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         phones.close();
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_menu, menu);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
-        //WHY THE FUCK SEARCH VIEW IS NUUUUUUULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
-        return true;
     }
 }
