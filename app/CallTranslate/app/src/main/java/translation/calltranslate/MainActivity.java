@@ -1,6 +1,5 @@
 package translation.calltranslate;
 
-import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,15 +8,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -30,9 +28,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.widget.AdapterView.*;
+import static android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    private int CALL_REQ_CODE = 200;
 
     private Context context;
     private SharedPreferences prefs;
@@ -82,26 +82,6 @@ public class MainActivity extends AppCompatActivity {
         phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
         LoadContact loadContact = new LoadContact();
         loadContact.execute();
-
-        /*search = (SearchView) findViewById(R.id.searchView);
-
-        //*** setOnQueryTextListener ***
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // TODO Auto-generated method stub
-
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // TODO Auto-generated method stub
-                adapter.filter(newText);
-                return false;
-            }
-        });*/
     }
 
     private void launchPhoneRequest() {
@@ -144,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
                     String id = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
                     String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    String EmailAddr = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA2));
                     String image_thumb = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
                     try {
                         if (image_thumb != null) {
@@ -158,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                     selectUser.setThumb(bit_thumb);
                     selectUser.setName(name);
                     selectUser.setPhone(phoneNumber);
-                    selectUser.setEmail(id);
                     selectUser.setCheckedBox(false);
                     selectUsers.add(selectUser);
                 }
@@ -177,6 +155,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     SelectUser data = selectUsers.get(i);
+                    Intent callIntent = new Intent(context, CallActivity.class);
+                    callIntent.putExtra("user", 1);
+                    callIntent.putExtra("otherNumber", data.phone);
+                    startActivityForResult(callIntent, CALL_REQ_CODE);
                 }
             });
             listView.setFastScrollEnabled(true);

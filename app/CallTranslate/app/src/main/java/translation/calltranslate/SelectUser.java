@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
  */
 public class SelectUser {
     String name;
+    Bitmap thumb;
+    String phone;
+    Boolean checkedBox = false;
 
     public Bitmap getThumb() {
         return thumb;
@@ -16,8 +19,6 @@ public class SelectUser {
         this.thumb = thumb;
     }
 
-    Bitmap thumb;
-
     public String getPhone() {
         return phone;
     }
@@ -25,8 +26,6 @@ public class SelectUser {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
-    String phone;
 
     public Boolean getCheckedBox() {
         return checkedBox;
@@ -36,8 +35,6 @@ public class SelectUser {
         this.checkedBox = checkedBox;
     }
 
-    Boolean checkedBox = false;
-
     public String getName() {
         return name;
     }
@@ -45,16 +42,4 @@ public class SelectUser {
     public void setName(String name) {
         this.name = name;
     }
-
-    String email;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-
 }
