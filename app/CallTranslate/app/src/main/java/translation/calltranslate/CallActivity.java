@@ -3,6 +3,11 @@ package translation.calltranslate;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -12,6 +17,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +53,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class CallActivity extends AppCompatActivity implements RecognitionListener {
+public class CallActivity extends AppCompatActivity implements RecognitionListener, SensorEventListener {
 
     private Context context;
     private SharedPreferences prefs;
@@ -63,6 +71,9 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     private ArrayList<Integer> voiceLevelChanges;
     private FirebaseChat chat;
     private int user;
+    private SensorManager mSensorManager;
+    private Sensor mProximity;
+    private AudioManager audioManager;
 
     private TextView callProgressTextView;
     private ProgressBar progressBar;
@@ -136,6 +147,18 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                     Log.e(TAG, firebaseError.getMessage());
                 }
             });
+
+            mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+            mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setSpeakerphoneOn(false);
         }
 
         chat = new FirebaseChat(callRef, user, otherNumber, id, context);
@@ -226,6 +249,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
         tts.finish();
         mSpeechRecognizer.destroy();
         chat.finish_conversation();
+        mSensorManager.unregisterListener(this);
         finish();
     }
 
@@ -499,4 +523,27 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 //        }
 //        recordCircle.requestLayout();
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        final Window window = getWindow();
+        WindowManager.LayoutParams lAttrs = getWindow().getAttributes();
+        View view = ((ViewGroup) window.getDecorView().findViewById(android.R.id.content)).getChildAt(0);
+        if (event.values[0] > 4) {
+            // turn on screen
+            audioManager.setSpeakerphoneOn(true);
+            lAttrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            view.setVisibility(View.VISIBLE);
+        }
+        else {
+            // turn off screen
+            audioManager.setSpeakerphoneOn(false);
+            lAttrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            view.setVisibility(View.INVISIBLE);
+        }
+        window.setAttributes(lAttrs);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 }

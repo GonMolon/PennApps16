@@ -170,7 +170,7 @@ public class SpeechActivity extends AppCompatActivity implements RecognitionList
                         } else {
 //                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 //                            intent.putExtra("response", result.toString());
-////                            intent.putExtra("match", result.getJSONObject("match").toString());
+//                            intent.putExtra("match", result.getJSONObject("match").toString());
 //                            intent.putExtra("query", result.getString("queryText"));
 //                            startActivity(intent);
                             System.out.print("Made it to API else case");

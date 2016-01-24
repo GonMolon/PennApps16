@@ -19,7 +19,6 @@ public class VoiceSynthesizer implements TextToSpeech.OnInitListener {
         id = 1;
         ready = false;
         error = false;
-        //its supposed that the required language is always the locale one, so no changes need to be done
         tts = new TextToSpeech(context, this);
     }
 
