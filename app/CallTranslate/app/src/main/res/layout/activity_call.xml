@@ -9,4 +9,30 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="translation.calltranslate.CallActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Call Set Up in Progress"
+        android:id="@+id/settingUpCallText"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="85dp" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/settingUpCallText"
+        android:layout_alignEnd="@+id/settingUpCallText"
+        android:layout_alignLeft="@+id/settingUpCallText"
+        android:layout_alignStart="@+id/settingUpCallText"
+        android:max="100"
+        style="@android:style/Widget.Material.ProgressBar.Large"
+        android:indeterminate="true"
+        android:indeterminateBehavior="cycle"
+        android:indeterminateOnly="true"
+
+        />
 </RelativeLayout>
