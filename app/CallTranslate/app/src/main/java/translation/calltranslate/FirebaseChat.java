@@ -24,7 +24,7 @@ public class FirebaseChat {
     private boolean finished;
     private Firebase callRef;
 
-    public FirebaseChat(Firebase callReference, String toPhone, String callId, Context context, final OnNewMessageListener listener) {
+    public FirebaseChat(Firebase callReference, String toPhone, String callId, Context context) {
         SharedPreferences prefs = context.getSharedPreferences("translation.calltranslate", Context.MODE_PRIVATE);
         this.myNum = prefs.getString("phoneNumber", null);
         this.otherNum = toPhone;
@@ -34,32 +34,6 @@ public class FirebaseChat {
         this.finished = false;
         this.callRef = callReference;
         setupCall();
-
-        callRef.child("messages").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if ((dataSnapshot.child("to").getValue()).toString().equals(myNum) && !((boolean) dataSnapshot.child("read").getValue())) {
-                    listener.onNewMessage(dataSnapshot);
-                    dataSnapshot.child("read").getRef().setValue(true);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-            }
-        });
     }
 
     public void setupCall() {
@@ -92,9 +66,5 @@ public class FirebaseChat {
             this.to = otherNum;
             this.read = false;
         }
-    }
-
-    public interface OnNewMessageListener {
-        void onNewMessage(DataSnapshot dataSnapshot);
     }
 }

@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
@@ -60,6 +62,9 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     private ArrayList<Integer> voiceLevelChanges;
     private FirebaseChat chat;
 
+    private TextView callProgressTextView;
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +72,9 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 
         context = this;
         prefs = this.getSharedPreferences("translation.calltranslate", MODE_PRIVATE);
+
+        callProgressTextView = (TextView) findViewById(R.id.callProgressText);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         myNumber = prefs.getString("phoneNumber", "None");
         Bundle b = getIntent().getExtras();
@@ -78,6 +86,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
         myLanguage = Locale.getDefault().getLanguage();
         otherLanguage = "";
 
+        callProgressTextView.setText("Calling " + otherNumber);
         tts = new VoiceSynthesizer(context);
         setupSpeechInput();
 
@@ -85,15 +94,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
         String id = myNumber + "_" + otherNumber;
         Firebase callRef = db.child(id);
 
-        chat = new FirebaseChat(callRef, otherNumber, id, context, new FirebaseChat.OnNewMessageListener() {
-            @Override
-            public void onNewMessage(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "MESSAGE RECEIVED");
-                String text = (String) dataSnapshot.child("text").getValue();
-                Log.d(TAG, text);
-//                sayMessage(text);
-            }
-        });
+        chat = new FirebaseChat(callRef, otherNumber, id, context);
 
         callRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -107,7 +108,14 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                     System.out.println("User 2 joined!");
                     otherLanguage = dataSnapshot.getValue().toString();
                     chat.setLang2(otherLanguage);
+                    callProgressTextView.setText("Call has begun. Begin speaking.");
+                    progressBar.setVisibility(View.GONE);
                     listen();
+                } else if (dataSnapshot.getKey().equals("finished")) {
+                    if ((boolean) dataSnapshot.getValue()) {
+                        Toast.makeText(context, "Call declined", Toast.LENGTH_SHORT).show();
+                        wrapUp();
+                    }
                 }
             }
 
@@ -126,14 +134,49 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 
             }
         });
+
+        callRef.child("messages").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if ((dataSnapshot.child("to").getValue()).toString().equals(myNumber) && !((boolean) dataSnapshot.child("read").getValue())) {
+                    Log.d(TAG, "MESSAGE RECEIVED");
+                    String text = (String) dataSnapshot.child("text").getValue();
+                    Log.d(TAG, text);
+                    dataSnapshot.child("read").getRef().setValue(true);
+                    sayMessage(text);
+                    listen();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        chat.finish_conversation();
+        wrapUp();
+    }
+
+    private void wrapUp() {
         tts.finish();
         mSpeechRecognizer.destroy();
+        chat.finish_conversation();
+        finish();
     }
 
     private void getTranslation(final String message) throws Exception {
@@ -195,6 +238,12 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                                     String translatedMessage = parse.getFirstChild().getTextContent();
                                     System.out.println(translatedMessage);
                                     chat.send_message(translatedMessage);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callProgressTextView.setText("Message sent. Please wait for a response.");
+                                        }
+                                    });
                                 } catch (ParserConfigurationException e) {
                                     e.printStackTrace();
                                 } catch (SAXException e) {
@@ -249,7 +298,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     @Override
     public void onBeginningOfSpeech() {
         Log.d(TAG, "onBeginingOfSpeech");
-//        micText.setText(getString(R.string.now_recording));
+        callProgressTextView.setText(getString(R.string.now_recording));
 //        recordCircle.getLayoutParams().width = 90;
 //        recordCircle.getLayoutParams().height = 90;
 //        recordCircle.requestLayout();
@@ -264,7 +313,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     @Override
     public void onEndOfSpeech() {
         Log.d(TAG, "onEndOfSpeech");
-//        micText.setText(getString(R.string.done_recording));
+        callProgressTextView.setText(getString(R.string.done_recording));
 //        recordCircle.getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
 //        recordCircle.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
 //        recordCircle.requestLayout();
@@ -339,7 +388,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     @Override
     public void onReadyForSpeech(Bundle params) {
         Log.d(TAG, "onReadyForSpeech"); //$NON-NLS-1$
-//        micText.setText(getString(R.string.begin_recording));
+        callProgressTextView.setText(getString(R.string.begin_recording));
 //        recordCircle.getLayoutParams().width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
 //        recordCircle.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
 //        recordCircle.requestLayout();
@@ -358,16 +407,17 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
         // matches are the return values of speech recognition engine
         if (matches != null) {
             // Log.d(TAG, matches.toString()); //$NON-NLS-1$
-//            callApi(matches.get(0));
             System.out.println(matches.get(0));
-            Toast.makeText(context, matches.get(0), Toast.LENGTH_SHORT).show();
+            callProgressTextView.setText("Sending message...");
             try {
                 getTranslation(matches.get(0));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            Toast.makeText(getApplicationContext(), "Sorry, we couldn't understand you.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Sorry, we couldn't understand you. Try again.", Toast.LENGTH_SHORT).show();
+            callProgressTextView.setText("Begin speaking.");
+            listen();
         }
     }
 
