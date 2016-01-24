@@ -21,11 +21,18 @@ import com.firebase.client.FirebaseError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -155,7 +162,6 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                     try {
                         JSONObject responseObj = new JSONObject(response.body().string());
                         String accessToken = responseObj.getString("access_token");
-                        System.out.println("Access token: " + accessToken);
 
                         String uri = Uri.parse("http://api.microsofttranslator.com/v2/Http.svc/Translate?")
                                 .buildUpon()
@@ -182,8 +188,18 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                                 if (!response.isSuccessful())
                                     throw new IOException("Unexpected code " + response);
 
-                                System.out.println(response.body().string());
-                                chat.send_message("Yo");
+                                try {
+                                    String xmlResponse = response.body().string();
+                                    DocumentBuilder newDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                                    Document parse = newDocumentBuilder.parse(new ByteArrayInputStream(xmlResponse.getBytes()));
+                                    String translatedMessage = parse.getFirstChild().getTextContent();
+                                    System.out.println(translatedMessage);
+                                    chat.send_message(translatedMessage);
+                                } catch (ParserConfigurationException e) {
+                                    e.printStackTrace();
+                                } catch (SAXException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
                     } catch (JSONException e) {
