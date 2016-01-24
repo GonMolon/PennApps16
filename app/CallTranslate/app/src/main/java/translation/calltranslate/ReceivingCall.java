@@ -11,6 +11,13 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.Locale;
+
 public class ReceivingCall extends AppCompatActivity {
 
     static final int border = 20;
@@ -23,11 +30,33 @@ public class ReceivingCall extends AppCompatActivity {
         setContentView(R.layout.activity_receiving_call);
         getSupportActionBar().setTitle("Incoming call");
 
+        Bundle b = getIntent().getExtras();
+        final String id = b.getString("message_id");
+
+        if(id == null) {
+            finish();
+        }
+
         Uri defaultRingtoneUri = RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE);
-        Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRingtoneUri);
+        final Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRingtoneUri);
         defaultRingtone.play();
 
         final Activity activity = this;
+
+        final Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com/");
+        db.child(id).child("finished").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getKey() == "finished") {
+                    if((boolean) dataSnapshot.getValue()) {
+                        defaultRingtone.stop();
+                        activity.finish();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
+        });
 
         decline_call = (ImageView)findViewById(R.id.decline_call);
         accept_call = (ImageView)findViewById(R.id.accept_call);
@@ -54,19 +83,29 @@ public class ReceivingCall extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if(seekBar.getProgress() < border) {
+                if (seekBar.getProgress() < border) {
+                    db.child(id).child("finished").setValue(true);
+                    defaultRingtone.stop();
                     activity.finish();
-                } else if(seekBar.getProgress() > 100-border) {
+                } else if (seekBar.getProgress() > 100 - border) {
+                    defaultRingtone.stop();
+                    db.child(id).child("language2").setValue(Locale.getDefault().getLanguage());
                     Intent intent = new Intent(activity.getApplicationContext(), SpeechActivity.class);
-                    startActivity(intent);
-                    activity.finish();
-                } else {
+                    startActivityForResult(intent, 1);
                     seekBar.setProgress(50);
                 }
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1) {
+            finish();
+        }
     }
 }

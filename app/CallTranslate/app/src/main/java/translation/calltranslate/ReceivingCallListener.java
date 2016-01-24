@@ -1,9 +1,11 @@
 package translation.calltranslate;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -27,14 +29,16 @@ public class ReceivingCallListener extends Service {
         if (my_phone != null) {
             db.addChildEventListener(new ChildEventListener() {
                 @Override
-                public void onChildAdded(DataSnapshot snap, String s) {
-                    s = snap.getKey();
-                    if (s.contains(my_phone) && (s.indexOf(my_phone) == 11) && (snap.child("language2").getValue() == null)) {
-                        Log.d(TAG, "Detected new phone call with id: " + s);
-                        snap.getRef().child("language2").setValue(Locale.getDefault().getLanguage());
-                        Intent i = new Intent(getApplicationContext(), ReceivingCall.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
+                public void onChildAdded(DataSnapshot snap, String id) {
+                    id = snap.getKey();
+                    if (id.contains(my_phone) && (id.indexOf(my_phone) == 11) && (snap.child("language2").getValue() == null || snap.child("language2").getValue().equals(""))) {
+                        Log.d(TAG, "Detected new phone call with id: " + id);
+                        Intent intent = new Intent(getApplicationContext(), ReceivingCall.class);
+                        Bundle b = new Bundle();
+                        b.putString("message_id", id);
+                        intent.putExtras(b);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                     }
                 }
 

@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Firebase.setAndroidContext(this); //firebase stuff
-        startService(new Intent(getBaseContext(), ReceivingCallListener.class)); //service to check if i'm beeing called
+        startService(new Intent(getBaseContext(), ReceivingCallListener.class)); //service to check if i'm being called
 
         context = this;
         prefs = this.getSharedPreferences("translation.calltranslate", MODE_PRIVATE);
