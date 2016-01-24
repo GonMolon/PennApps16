@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.PowerManager;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -71,9 +72,9 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
     private ArrayList<Integer> voiceLevelChanges;
     private FirebaseChat chat;
     private int user;
-    private SensorManager mSensorManager;
-    private Sensor mProximity;
     private AudioManager audioManager;
+    private SensorManager mSensorManager;
+    private PowerManager mPowerManager;
 
     private TextView callProgressTextView;
     private ProgressBar progressBar;
@@ -85,6 +86,14 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 
         context = this;
         prefs = this.getSharedPreferences("translation.calltranslate", MODE_PRIVATE);
+
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
+
+        mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+        audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setSpeakerphoneOn(true);
 
         callProgressTextView = (TextView) findViewById(R.id.callProgressText);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -148,17 +157,6 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
                 }
             });
 
-            mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-            mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
-
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setSpeakerphoneOn(false);
         }
 
         chat = new FirebaseChat(callRef, user, otherNumber, id, context);
@@ -249,7 +247,9 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
         tts.finish();
         mSpeechRecognizer.destroy();
         chat.finish_conversation();
-        mSensorManager.unregisterListener(this);
+        if(mSensorManager != null) {
+            mSensorManager.unregisterListener(this);
+        }
         finish();
     }
 
@@ -526,22 +526,19 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        final Window window = getWindow();
-        WindowManager.LayoutParams lAttrs = getWindow().getAttributes();
-        View view = ((ViewGroup) window.getDecorView().findViewById(android.R.id.content)).getChildAt(0);
+        Log.d(TAG, "Sensor changes");
+        PowerManager.WakeLock mWakeLock;
         if (event.values[0] > 4) {
             // turn on screen
-            audioManager.setSpeakerphoneOn(true);
-            lAttrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            view.setVisibility(View.VISIBLE);
-        }
-        else {
-            // turn off screen
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
             audioManager.setSpeakerphoneOn(false);
-            lAttrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            view.setVisibility(View.INVISIBLE);
+        } else {
+            // turn off screen
+            mWakeLock = mPowerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+            audioManager.setSpeakerphoneOn(true);
         }
-        window.setAttributes(lAttrs);
+        mWakeLock.acquire();
+
     }
 
     @Override
