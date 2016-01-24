@@ -23,6 +23,9 @@ public class ReceivingCall extends AppCompatActivity {
     static final int border = 20;
     private ImageView decline_call;
     private ImageView accept_call;
+    private Ringtone defaultRingtone;
+    private String id;
+    private Firebase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,24 +34,24 @@ public class ReceivingCall extends AppCompatActivity {
         getSupportActionBar().setTitle("Incoming call");
 
         Bundle b = getIntent().getExtras();
-        final String id = b.getString("message_id");
+        id = b.getString("message_id");
 
         if(id == null) {
             finish();
         }
 
         Uri defaultRingtoneUri = RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE);
-        final Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRingtoneUri);
+        defaultRingtone = RingtoneManager.getRingtone(this, defaultRingtoneUri);
         defaultRingtone.play();
 
         final Activity activity = this;
 
-        final Firebase db = new Firebase("https://vivid-inferno-6896.firebaseio.com/");
+        db = new Firebase("https://vivid-inferno-6896.firebaseio.com/");
         db.child(id).child("finished").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getKey() == "finished") {
-                    if((boolean) dataSnapshot.getValue()) {
+                    if(dataSnapshot.getValue() != null && (boolean) dataSnapshot.getValue()) {
                         defaultRingtone.stop();
                         activity.finish();
                     }
@@ -108,6 +111,17 @@ public class ReceivingCall extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1) {
             finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(defaultRingtone != null) {
+            defaultRingtone.stop();
+        }
+        if(id != null && db != null) {
+            db.child(id).child("finished").setValue(true);
         }
     }
 }

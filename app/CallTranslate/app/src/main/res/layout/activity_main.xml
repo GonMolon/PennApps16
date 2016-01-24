@@ -12,13 +12,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test-TTS"
-        android:id="@+id/open_test"
-        android:layout_alignParentTop="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Test Receiving Call"
         android:id="@+id/receivingCallButton"
         android:layout_alignParentTop="true"

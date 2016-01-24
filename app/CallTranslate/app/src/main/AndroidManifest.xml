@@ -26,10 +26,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".TTSActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".AddChatActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"

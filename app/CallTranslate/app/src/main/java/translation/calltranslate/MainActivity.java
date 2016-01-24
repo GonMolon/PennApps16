@@ -56,16 +56,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        Button tts = (Button)findViewById(R.id.open_test);
-        tts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, TTSActivity.class);
-                MainActivity.this.startActivity(i);
-            }
-        });
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
