@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -97,6 +98,13 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
 
         callProgressTextView = (TextView) findViewById(R.id.callProgressText);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        Button endCallButton = (Button) findViewById(R.id.endCallButton);
+        endCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wrapUp();
+            }
+        });
 
         myNumber = prefs.getString("phoneNumber", "None");
         String id = "";
@@ -122,6 +130,7 @@ public class CallActivity extends AppCompatActivity implements RecognitionListen
             id = myNumber + "_" + otherNumber;
         } else {
             callProgressTextView.setText("Waiting for first message to be sent.");
+            progressBar.setVisibility(View.GONE);
         }
 
         tts = new VoiceSynthesizer(context);
